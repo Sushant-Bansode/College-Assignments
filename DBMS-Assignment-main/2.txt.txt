@@ -1,0 +1,238 @@
+CREATE TABLE Account(Acc_no NUMBER(5), branch_name VARCHAR(10), balance
+NUMBER(8));
+insert into Account values(1001,'Akurdi',10000);
+insert into Account values(1002,'Pune',11000);
+insert into Account values(1003,'Dapodi',9000);
+insert into Account values(1004,'Pimpri',12000);
+insert into Account values(1005,'Chinchwad',14000);
+insert into Account values(1006,'Khadki',25000);
+ACC_NO BRANCH_NAM BALANCE
+---------- ---------- ----------
+1001 Akurdi 10000
+1002 Pune 11000
+1003 Dapodi 9000
+1004 Pimpri 12000
+1005 Chinchwad 14000
+1006 Khadki 25000
+—------------------------------------------------------------------------------------------------------------------
+CREATE TABLE branch(branch_name VARCHAR(10), branch_city VARCHAR(10),
+assets VARCHAR(10));
+insert into branch values('Akurdi','pune','abc');
+insert into branch values('Pune','pune','xyz');
+insert into branch values('Pimpri','Pimpri','pqr');
+insert into branch values('Dapodi','Pune','lmn');
+BRANCH_NAM BRANCH_CIT ASSETS
+---------- ---------- ----------
+Akurdi pune abc
+Pune pune xyz
+Pimpri Pimpri pqr
+Dapodi Pune lmn
+—------------------------------------------------------------------------------------------------------------------
+create table customer(cust_name varchar(20),cust_street varchar(20),cust_city
+varchar(20));
+insert into customer values('Virat','Akurdi','Pune');
+insert into customer values('Rahul','Pimpri','Pune');
+insert into customer values('Rutuja','Chinchwad','Chinchwad');
+insert into customer values('Rohit','Khadki','Pune');
+CUST_NAME CUST_STREET CUST_CITY
+-------------------- -------------------- --------------------
+Virat Akurdi Pune
+Rahul Pimpri Pune
+Rutuja Chinchwad Chinchwad
+Rohit Khadki Pune
+—------------------------------------------------------------------------------------------------------------------
+create table Depositor(cust_name varchar(20),acc_no number(20));
+insert into Depositor values('Virat',1001);
+insert into Depositor values('Rohit',1002);
+insert into Depositor values('Ruturaj',1003);
+insert into Depositor values('Rahul',1004);
+CUST_NAME ACC_NO
+-------------------- ----------
+Virat 1001
+Rohit 1002
+Ruturaj 1003
+Rahul 1004
+—------------------------------------------------------------------------------------------------------------------
+create table Loan(loan_no varchar(20),branch_name varchar(20),amount float);
+insert into Loan values('L001','Pimpri',95000.00);
+insert into Loan values('L002','Akurdi',98000.00);
+insert into Loan values('L003','Pune',91000.00);
+insert into Loan values('L004','Dapodi',79000.00);
+insert into Loan values('L005','Chinchwad',9900.00);
+insert into Loan values('L006','Khadki',50000.00);
+LOAN_NO BRANCH_NAME AMOUNT
+-------------------- -------------------- ----------
+L001 Pimpri 95000
+L002 Akurdi 98000
+L003 Pune 91000
+L004 Dapodi 79000
+L005 Chinchwad 9900
+L006 Khadki 50000
+—------------------------------------------------------------------------------------------------------------------
+create table Borrower(cust_name varchar(20),loan_no varchar(20));
+insert into Borrower values('Rohit','L001');
+insert into Borrower values('Virat','L002');
+insert into Borrower values('Rahul','L003');
+insert into Borrower values('Rutuja','L004');
+CUST_NAME LOAN_NO
+-------------------- --------------------
+Rohit L001
+Virat L002
+Rahul L003
+Rutuja L004
+==================================================================
+Q1. Find the names of all branches in loan relation.
+Ans:-
+Select branch_name from Loan;
+BRANCH_NAME
+--------------------
+Pimpri
+Akurdi
+Pune
+Dapodi
+Chinchwad
+Khadki
+—------------------------------------------------------------------------------------------------------------------
+Q2. Find all loan numbers for loans made at Akurdi Branch with loan amount > 12000.
+Ans:-
+Select loan_no from Loan Where amount>12000;
+LOAN_NO
+--------------------
+L001
+L002
+L003
+L004
+L006
+—------------------------------------------------------------------------------------------------------------------
+Q3. Find all customers who have a loan from bank. Find their names, loan_no and loan
+amount.
+Ans:-
+Select b.cust_name,l.loan_no,l.amount From Borrower b,Loan l where b.loan_no =
+l.loan_no;
+CUST_NAME LOAN_NO AMOUNT
+-------------------- -------------------- ----------
+Rohit L001 95000
+Virat L002 98000
+Rahul L003 91000
+Rutuja L004 79000
+—------------------------------------------------------------------------------------------------------------------
+Q4. List all customers in alphabetical order who have loans from the Akurdi branch.
+Ans:-
+select cust_name from Borrower, Loan where branch_name='Akurdi' and
+Borrower.loan_no= Loan.loan_no order by cust_name;
+CUST_NAME
+--------------------
+Virat
+—------------------------------------------------------------------------------------------------------------------
+Q5. Find all customers who have an account or loan or both at the bank.
+Ans:-
+SELECT distinct cust_name from Borrower where cust_name in(select cust_name from
+Depositor);
+CUST_NAME
+--------------------
+Rohit
+Virat
+Rahul
+—------------------------------------------------------------------------------------------------------------------
+Q6. Find all customers who have both an account and loan at the bank.
+Ans:-
+select cust_name from Depositor intersect select cust_name from Borrower;
+CUST_NAME
+--------------------
+Virat
+Rohit
+Rahul
+—------------------------------------------------------------------------------------------------------------------
+Q7. Find all customers who have an account but no loan at the bank.
+Ans:-
+select cust_name from Depositor minus select cust_name from Borrower;
+CUST_NAME
+--------------------
+Ruturaj
+—------------------------------------------------------------------------------------------------------------------
+Q8. Find average account balance at Akurdi branch.
+Ans:-
+SELECT avg(balance)FROM Account where branch_name = 'Akurdi';
+AVG(BALANCE)
+------------
+10000
+—------------------------------------------------------------------------------------------------------------------
+Q9. Find the average account balance at each branch.
+Ans:-
+select branch_name, avg(balance) from Account group by branch_name;
+BRANCH_NAM AVG(BALANCE)
+---------- ------------
+Akurdi 10000
+Pune 11000
+Dapodi 9000
+Pimpri 12000
+Chinchwad 14000
+Khadki 25000
+—------------------------------------------------------------------------------------------------------------------
+Q10. Find no. of depositors at each branch.
+Ans:-
+select branch_name, count(Depositor.acc_no) from Account, Depositor where
+Account.acc_no= Depositor.acc_no group by branch_name;
+BRANCH_NAM COUNT(DEPOSITOR.ACC_NO)
+---------- -----------------------
+Akurdi 1
+Pune 1
+Dapodi 1
+Pimpri 1
+—------------------------------------------------------------------------------------------------------------------
+Q11. Find the branches where average account balance > 20000.
+Ans:-
+select branch_name, avg(balance) from Account group by branch_name having
+avg(balance)>20000;
+BRANCH_NAM AVG(BALANCE)
+---------- ------------
+Khadki 25000
+—------------------------------------------------------------------------------------------------------------------
+Q12. Find number of tuples in customer relation.(tuple means row)
+Ans:-
+select count(*) from Customer;
+COUNT(*)
+----------
+4
+—------------------------------------------------------------------------------------------------------------------
+Q13. Calculate total loan amount given by bank.
+ANS:-
+select sum(amount) from Loan;
+SUM(AMOUNT)
+-----------
+422900
+—------------------------------------------------------------------------------------------------------------------
+Q14. Delete all loans with loan amounts between 50000 and 80000.
+Ans:-
+Delete loan WHERE Amount>50000 AND Amount<80000;
+select * from Laon;
+LOAN_NO BRANCH_NAME AMOUNT
+-------------------- -------------------- ----------
+L001 Pimpri 95000
+L002 Akurdi 98000
+L003 Pune 91000
+L005 Chinchwad 9900
+L006 Khadki 50000
+—------------------------------------------------------------------------------------------------------------------
+Q15.Delete all tuples at every branch located in Pune.
+Ans:-
+delete from Branch where branch_name='Pune';
+Select * from Branch;
+BRANCH_NAM BRANCH_CIT ASSETS
+---------- ---------- ----------
+Akurdi pune abc
+Pimpri Pimpri pqr
+Dapodi Pune lmn
+—------------------------------------------------------------------------------------------------------------------
+Q16. Create synonyms for customer tables as cust.
+Ans:-
+create synonym cust for Customer;
+Synonym created.
+—------------------------------------------------------------------------------------------------------------------
+Q.17. Create sequence roll_seq and use in student table for roll_no column.
+Ans:-
+create table Student08(roll_no number, name char(20));
+Table created.
+create sequence stusq increment by 1 start with 1;
+Sequence created.
+—------------------------------------------------------------------------------------------------------------------

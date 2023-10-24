@@ -1,0 +1,40 @@
+import java.net.*;
+import java.util.Scanner;
+
+public class DNS {
+    static public void main(String [] args) {
+        
+       Scanner scan = new Scanner(System.in);
+       InetAddress add;
+ 
+       System.out.print("*********************Options********************** \n");
+       System.out.print("1. URL to IP \n2. IP to URL \n" );
+       int opt = scan.nextInt();
+       scan.nextLine();
+       
+       if (opt==1){
+           System.out.print("Enter URL: ");
+           String s = scan.nextLine();
+           try{
+            add = InetAddress.getByName(s);
+            System.out.println("Ip of " + s + " is " + add.getHostAddress());
+           }
+           catch(Exception e){System.out.println(e);}
+        }
+       else{ 
+           System.out.print("Enter IP: ");
+           String s = scan.nextLine();
+           byte[] ip = new byte[4];
+           String[] t = s.split("[.]");
+           for(int i = 0;i<4;i++){
+               ip[i] = new Integer(t[i]).byteValue();      
+           }     
+
+          try{
+              add = InetAddress.getByAddress(ip);
+              System.out.println("URL: " + add.getHostName());
+          }
+          catch(Exception e){System.out.println(e);}
+     }
+    } 
+}

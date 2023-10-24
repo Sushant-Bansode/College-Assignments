@@ -1,0 +1,247 @@
+Q1. Create following Tables
+cust_mstr(cust_no,fname,lname)
+add_dets(code_no,add1,add2,state,city,pincode)
+Retrieve the address of customer Fname as 'xyz' and Lname as 'pqr'
+Ans:-
+CREATE TABLE cust_mstr(cust_no NUMBER(5),fname VARCHAR(20),lname
+VARCHAR(20));
+INSERT INTO cust_mstr VALUES(1,'xyz','pqr');
+INSERT INTO cust_mstr VALUES(2,'xyz','lmn');
+INSERT INTO cust_mstr VALUES(3,'abc','pqr');
+CUST_NO FNAME LNAME
+---------- ----------------- --------------------
+1 xyz pqr
+2 xyz lmn
+3 abc pqr
+CREATE TABLE add_dets(code_no INTEGER,add1 VARCHAR(20),add2
+VARCHAR(20),state VARCHAR(20),city VARCHAR(20),pincode INTEGER);
+INSERT INTO add_dets VALUES(1,'Pune','Pim-Chin','Maha.','Pune',410510);
+INSERT INTO add_dets VALUES(2,'Nigdi','Pim-Chin','Maha.','Pune',411044);
+CODE_NO ADD1 ADD2 STATE CITY PINCODE
+---------- ----------- ----------- -------------- —-------- —-------------
+1 Pune Pim-Chin Maha. Pune 410510
+2 Pune Pim-Chin Maha. Pune 411044
+SELECT add1,add2,state,city,pincode FROM add_dets WHERE code_no IN ( SELECT
+cust_no from cust_mstr WHERE fname = 'xyz' AND lname = 'pqr');
+ADD1 ADD2 STATE CITY PINCODE
+---------- ----------- ----------- -------------- —----------
+Pune Pim-Chin Maha. Pune 410510
+—---------------------------------------------------------------------------------------------------------
+Q2.Create following Tables
+cust_mstr(custno,fname,lname)
+acc_fd_cust_dets(codeno,acc_fd_no)
+fd_dets(fd_sr_no,amt)
+List the customer holding fixed deposit of amount more than 5000
+Ans:-
+CREATE TABLE cust_mstr(cust_no NUMBER(5),fname VARCHAR(10),lname
+VARCHAR(10));
+INSERT INTO cust_mstr VALUES(1,'xyz','pqr');
+INSERT INTO cust_mstr VALUES(2,'xyz','lmn');
+INSERT INTO cust_mstr VALUES(3,'abc','pqr');
+CUST_NO FNAME LNAME
+---------- -------------- ---------------
+1 xyz pqr
+2 xyz lmn
+3 abc pqr
+CREATE TABLE acc_fd_cust_dets(codeno NUMBER(5),acc_fd_no NUMBER(5));
+INSERT INTO acc_fd_cust_dets VALUES(2,201);
+INSERT INTO acc_fd_cust_dets VALUES(3,202);
+CODENO ACC_FD_NO
+---------- ----------
+2 201
+3 202
+CREATE TABLE fd_dets(fd_sr_no NUMBER(5),amt NUMBER(8));
+INSERT INTO fd_dets VALUES(201,15000);
+INSERT INTO fd_dets VALUES(202,50000);
+FD_SR_NO AMT
+---------- ----------
+201 15000
+202 50000
+SELECT custno,fname,lname FROM cust_mstr WHERE cust_no IN (SELECT codeno
+FROM acc_fd_cust_dets WHERE acc_fd_no IN (SELECT fd_sr_no FROM fd_dets
+WHERE amt > 5000));
+CUST_NO FNAME LNAME
+---------- --------------- --------------------
+2 xyz lmn
+3 abc pqr
+—------------------------------------------------------------------------------------------------------------------
+Q3. Create following Tables
+emp_mstr(e_mpno,f_name,l_name,m_name,dept,desg,branch_no)
+branch_mstr(name,b_no)
+List the employee details along with branch names to which they belong
+Ans:-
+CREATE TABLE emp_mstr(e_mpno NUMBER(4),f_name VARCHAR(8),l_name
+VARCHAR(8),m_name VARCHAR(8),dept VARCHAR(8),desg VARCHAR(8),branch_no
+NUMBER(4));
+INSERT INTO emp_mstr VALUES(100,'Rohit','Sharma','Raju','Finance','Assis.',5401);
+INSERT INTO emp_mstr VALUES(101,'Virat','Kohli','Shyam','HR','HR',5402);
+INSERT INTO emp_mstr VALUES(102,'Ronit','Dahiya','Anuj','Ad.','Worker',5403);
+INSERT INTO emp_mstr VALUES(103,'Punit','Khan','Rahul','Finance',’Manager',5401);
+E_MPNO F_NAME L_NAME M_NAME DEPT DESG BRANCH_NO
+---------- -------- -------- -------- -------- -------- ----------
+100 Rohit Sharma Raju Finance Assis. 5401
+101 Virat Kohli Shyam HR HR 5402
+102 Ronit Dahiya Anuj Ad. Worker 5403
+103 Punit Khan Rahul Finance Manager 5401
+CREATE TABLE branch_mstr(name VARCHAR(15),b_no NUMBER(4));
+INSERT INTO branch_mstr VALUES('Nigdi',5401);
+INSERT INTO branch_mstr VALUES('Akurdi',5402);
+INSERT INTO branch_mstr VALUES('Pimpri',5403);
+INSERT INTO branch_mstr VALUES('Khadki',5404);
+SELECT A.e_mpno,A.f_name,A.l_name,A.m_name,A.dept,A.desg,A.branch_no,
+B.name FROM emp_mstr A INNER JOIN branch_mstr B ON A.branch_no = B.b_no;
+E_MPNO F_NAME L_NAME M_NAME DEPT DESG BRANCH_NO NAME
+---------- -------- -------- -------- -------- -------- ---------- —-------
+100 Rohit Sharma Raju Finance Assis. 5401 Nigdi
+101 Virat Kohli Shyam HR HR 5402 Akurdi
+102 Ronit Dahiya Anuj Ad. Worker 5403 Pimpri
+103 Punit Khan Rahul Finance Manager 5401 Nigdi
+—------------------------------------------------------------------------------------------------------------------
+Q4.Create following Tables
+emp_mstr(emp_no,f_name,l_name,m_name,dept)
+cntc_dets(code_no,cntc_type,cntc_data)
+List the employee details along with contact details using left outer join & right join
+Ans:-
+CREATE TABLE emp_mstr(e_mpno NUMBER(4),f_name VARCHAR(8),l_name
+VARCHAR(8),m_name VARCHAR(8),dept VARCHAR(8));
+INSERT INTO emp_mstr VALUES(101,'abc','abc','abc','comp');
+INSERT INTO emp_mstr VALUES(102,'pqr','pqr','pqr','IT');
+INSERT INTO emp_mstr VALUES(103,'xyz','xyz','xyz','Mech');
+E_MPNO F_NAME L_NAME M_NAME DEPT
+---------- -------- -------- -------- --------
+101 abc abc abc comp
+102 pqr pqr pqr IT
+103 xyz xyz xyz Mech
+CREATE TABLE cntc_dets(code_no NUMBER(4), cntc_type VARCHAR(10), cntc_data
+NUMBER(10));
+INSERT INTO cntc_dets values (101,'personal',123456789);
+INSERT INTO cntc_dets values (101,'office',456789123);
+INSERT INTO cntc_dets values (102,'office',123789456);
+INSERT INTO cntc_dets values (102,'personal',321789456);
+INSERT INTO cntc_dets values (103,'personal',654789456);
+CODE_NO CNTC_TYPE CNTC_DATA
+---------- ---------- ----------
+101 personal 123456789
+101 office 456789123
+102 office 123789456
+102 personal 321789456
+103 personal 654789456
+SELECT * FROM emp_mstr LEFT JOIN cntc_dets ON
+emp_mstr.e_mpno=cntc_dets.code_no
+E_MPNO F_NAME L_NAME M_NAME DEPT CODE_NO CNTC_TYPE CNTC_DATA
+---------- -------- -------- -------- -------- ------------- -------------- --------------
+101 abc abc abc comp 101 personal 123456789
+101 abc abc abc comp 101 office 456789123
+102 pqr pqr pqr IT 102 office 123789456
+102 pqr pqr pqr IT 102 personal 321789456
+103 xyz xyz xyz Mech 103 personal 654789456
+SELECT * FROM emp_mstr RIGHT JOIN cntc_dets ON
+emp_mstr.e_mpno=cntc_dets.code_no;
+E_MPNO F_NAME L_NAME M_NAME DEPT CODE_NO CNTC_TYPE CNTC_DATA
+---------- -------- -------- -------- -------- ------------- -------------- --------------
+101 abc abc abc comp 101 personal 123456789
+101 abc abc abc comp 101 office 456789123
+102 pqr pqr pqr IT 102 office 123789456
+102 pqr pqr pqr IT 102 personal 321789456
+103 xyz xyz xyz Mech 103 personal 654789456
+—------------------------------------------------------------------------------------------------------------------
+Q5. Create following Tables
+cust_mstr(cust_no,fname,lname)
+add_dets(code_no,pincode)
+List the customers who do not have bank branches in their vicinity.
+Ans:-
+CREATE TABLE cust_mstr(cust_no NUMBER(5),fname VARCHAR(10),lname
+VARCHAR(10));
+INSERT INTO cust_mstr VALUES(5201,'xyz','pqr');
+INSERT INTO cust_mstr VALUES(5202,'xyz','lmn');
+INSERT INTO cust_mstr VALUES(5203,'abc','pqr');
+INSERT INTO cust_mstr VALUES(5204,'bgv','qwe');
+INSERT INTO cust_mstr VALUES(5205,'rth','poi');
+CUST_NO FNAME LNAME
+---------- ---------- ----------
+5201 xyz pqr
+5202 xyz lmn
+5203 abc pqr
+5204 bgv qwe
+5205 rth poi
+CREATE TABLE add_dets(code_no NUMBER(5),pincode NUMBER(6));
+INSERT INTO add_dets VALUES(5202,411044);
+INSERT INTO add_dets VALUES(5204,455088);
+INSERT INTO add_dets VALUES(5205,422966);
+CODE_NO PINCODE
+---------- ----------
+5202 411044
+5204 455088
+5205 422966
+SELECT cust_no,fname,lname FROM cust_mstr WHERE cust_no NOT IN (SELECT
+code_no FROM add_dets);
+CUST_NO FNAME LNAME
+---------- ---------- ----------
+5201 xyz pqr
+5203 abc pqr
+—------------------------------------------------------------------------------------------------------------------
+6. a) Create View on borrower table by selecting any two columns and perform insert
+update delete
+operations
+b) Create view on borrower and depositor table by selecting any one column from each
+table
+perform insert update delete operations
+c) create updatable view on borrower table by selecting any two columns and perform
+insert update
+delete operations.
+Ans:-
+CREATE TABLE Borrower(b_no NUMBER(5),name VARCHAR(10),amt NUMBER(8));
+INSERT INTO Borrower VALUES(6420,'ABC',50000);
+INSERT INTO Borrower VALUES(6421,'XYZ',25000);
+INSERT INTO Borrower VALUES(6422,'PQR',18000);
+INSERT INTO Borrower VALUES(6423,'LMN',90000);
+B_NO NAME AMT
+---------- ---------- ----------
+6420 ABC 50000
+6421 XYZ 25000
+6422 PQR 18000
+6423 LMN 90000
+CREATE TABLE Depositor(d_no NUMBER(5),name VARCHAR(10),amt NUMBER(8));
+INSERT INTO Depositor VALUES(8860,'TYU',400000);
+INSERT INTO Depositor VALUES(8861,'WER',40000);
+INSERT INTO Depositor VALUES(8862,'ABC',70000);
+INSERT INTO Depositor VALUES(8863,'ZXC',29000);
+D_NO NAME AMT
+---------- ---------- ----------
+8860 TYU 400000
+8861 WER 40000
+8862 ABC 70000
+8863 ZXC 29000
+CREATE VIEW Bor_1 AS SELECT b_no,name FROM Borrower WIT
+H CHECK OPTION;
+B_NO NAME
+---------- ----------
+6420 ABC
+6421 XYZ
+6422 PQR
+6423 LMN
+UPDATE Bor_1 SET name='QWE' WHERE b_no=6420;
+B_NO NAME
+---------- ----------
+6420 QWE
+6421 XYZ
+6422 PQR
+6423 LMN
+DELETE Bor_1 WHERE name='PQR';
+B_NO NAME
+---------- ----------
+6420 QWE
+6421 XYZ
+6423 LMN
+INSERT INTO Bor_1 VALUES(6425,'TYU');
+B_NO NAME
+---------- ----------
+6420 QWE
+6421 XYZ
+6423 LMN
+6425 TYU
+CREATE VIEW Dep_Bor AS SELECT Borrower.b_no,Borrower.name,Depositor.d_no
+FROM Borrower JOIN Depositor ON Borrower.name=Depositor.name;
+B_NO NAME D_NO
+---------- ---------- ----------
+6420 ABC 8862

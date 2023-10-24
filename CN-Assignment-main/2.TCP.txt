@@ -1,0 +1,80 @@
+//*** Client
+
+// SimpleClient.java: A simple client program.
+import java.net.*;
+import java.io.*;
+
+public class Client {
+    public static void main(String args[]) throws IOException {
+        // Open your connection to a server, at port 1254
+        Socket s1 = new Socket("localhost", 1254);
+        // Get an input file handle from the socket and read the input
+        InputStream s1In = s1.getInputStream();
+        DataInputStream dis = new DataInputStream(s1In);
+        OutputStream s1out = s1.getOutputStream();
+        DataOutputStream dos = new DataOutputStream(s1out);
+
+        BufferedReader scan = new BufferedReader(new InputStreamReader(System.in));
+        String st = "";
+
+        while (st != "Stop") {
+
+            // System.out.print("Enter String: ");
+            st = scan.readLine();
+            dos.writeUTF(st);
+
+            if (!st.equals("Stop")) {
+                st = dis.readUTF();
+                System.out.println("Server: " + st);
+            } else {
+                break;
+            }
+
+        }
+        // When done, just close the connection and exit
+        dis.close();
+        s1In.close();
+        s1.close();
+    }
+}
+
+// Server
+
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class Server {
+
+    public static void main(String args[]) throws IOException {
+        // Register service on port 1254
+        ServerSocket s = new ServerSocket(1254);
+        Socket s1 = s.accept(); // Wait and accept a connection
+        // Get a communication stream associated with the socket
+        OutputStream s1out = s1.getOutputStream();
+        DataOutputStream dos = new DataOutputStream(s1out);
+        InputStream s1In = s1.getInputStream();
+        DataInputStream dis = new DataInputStream(s1In);
+        BufferedReader scan = new BufferedReader(new InputStreamReader(System.in));
+        // Send a string!
+
+        String st = "";
+        while (!st.equals("Stop")) {
+            st = dis.readUTF();
+            System.out.println("Client: " + st);
+
+            if (!st.equals("Stop")) {
+                st = scan.readLine();
+                dos.writeUTF(st);
+            } else {
+                break;
+            }
+
+        }
+
+        dos.close();
+        s1out.close();
+        s1.close();
+
+    }
+}

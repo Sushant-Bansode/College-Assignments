@@ -1,0 +1,172 @@
+1. Write a update, delete trigger on clientmstr table. The System should keep track of the
+records that ARE BEING updated or deleted. The old value of updated or deleted
+records should be added in audit_trade table. (separate implementation using both row
+and statement triggers)
+Ans:-
+Create or replace trigger emp_info after update or delete on emp45
+for each row
+Declare
+oper varchar(10);
+Begin
+if updating then
+oper:='updated';
+end if;
+if deleting then
+oper:='Deleted';
+end if;
+insert into audit_trade values(:old.emp_no,oper);
+End;
+OUTPUT:
+SQL> select * from emp45;
+EMP_NO TRADE
+---------- ----------
+1 Electrical
+293 Computer
+142 Civil
+13 Chemical
+SQL> select * from audit_trade;
+no rows selected
+Trigger created.
+SQL> update emp45 set emp_no=999,trade='Change_Trd' where emp_no=1;
+1 row updated.
+SQL> select * from emp45;
+EMP_NO TRADE
+---------- ----------
+999 Change_Trd
+293 Computer
+142 Civil
+13 Chemical
+SQL> select * from audit_trade;
+EMP_NO STATUS
+---------- ----------
+1 updated
+SQL> delete from emp45 where emp_no=293;
+1 row deleted.
+SQL> select * from emp45;
+EMP_NO TRADE
+---------- ----------
+999 Change_Trd
+142 Civil
+13 Chemical
+SQL> select * from audit_trade;
+EMP_NO STATUS
+---------- ----------
+1 updated
+293 Deleted
+SQL>
+2. Write a before trigger for Insert, update event considering following requirement:
+Emp(e_no, e_name, salary)
+I) Trigger action should be initiated when salary is tried to be inserted is less than Rs.
+50,000/-
+II) Trigger action should be initiated when salary is tried to be updated for value less
+than Rs. 50,000/-
+Action should be rejection of update or Insert operation by displaying appropriate error
+message. Also the new values expected to be inserted will be stored in new table
+Tracking(e_no, salary).
+CODE:
+Create or replace trigger emp_salary before insert or update on emp7
+for each row
+Begin
+if :new.salary>=50000 then
+insert into traking values(:new.emp_no,:new.salary);
+elsif :new.salary<50000 then
+raise_application_error(-20003,'Salary should not be
+less than 50000');
+end if;
+End;
+OUTPUT:
+SQL> select * from emp7;
+EMP_NO SALARY
+---------- ----------
+1 80000
+11 88000
+111 87800
+1111 86708
+SQL> select * from traking;
+no rows selected
+SQL> Create or replace trigger emp_salary before insert or update on emp7
+2 for each row
+3
+4 Begin
+5 if :new.salary>=50000 then
+6 insert into traking values(:new.emp_no,:new.salary);
+7
+8 elsif :new.salary<50000 then
+9 raise_application_error(-20003,'Salary should not be
+10 less than 50000');
+11 end if;
+12 End;
+13 /
+Trigger created.
+SQL> insert into emp7 values(11111,45000);
+insert into emp7 values(11111,45000)
+*
+ERROR at line 1:
+ORA-20003: Salary should not be
+less than 50000
+ORA-06512: at "SYSTEM.EMP_SALARY", line 6
+ORA-04088: error during execution of trigger 'SYSTEM.EMP_SALARY'
+SQL> select * from emp7;
+EMP_NO SALARY
+---------- ----------
+1 80000
+11 88000
+111 87800
+1111 86708
+SQL> select * from traking;
+no rows selected
+SQL> insert into emp7 values(11111,95000);
+1 row created.
+SQL> select * from emp7;
+EMP_NO SALARY
+---------- ----------
+1 80000
+11 88000
+111 87800
+1111 86708
+11111 95000
+SQL> select * from traking;
+EMP_NO SALARY
+---------- ----------
+11111 95000
+3. Write a Database trigger for following requirements:
+Employee salary of last three month is stored in the emp_sal table.
+emp_sal(emp_no, sal1,sal2,sal3)
+before inserting salary into emp_sal table, if salary of employee in any of the last three
+month
+is greater than Rs. 50,000/- then entry of average salary along with emp_no needs to be
+inserted into new table emp_new(emp_no, avg_sal).
+Ans:-
+Create or replace trigger emp_salary2 before insert or update on emp77
+for each row
+Declare
+total_sal DECIMAL(10, 2);
+avg1_sal DECIMAL(10, 2);
+Begin
+total_sal := :NEW.sal1 + :NEW.sal2 + :NEW.sal3;
+avg1_sal := total_sal / 3;
+if (:new.sal1<=50000 or :new.sal2<=50000 or :new.sal3<=50000) then
+insert into emp_new values(:new.emp_no,avg1_sal);
+end if;
+End;
+OUTPUT:
+SQL> select * from emp77;
+EMP_NO SAL1 SAL2 SAL3
+---------- ---------- ---------- ----------
+1 34000 34000 34500
+11 45000 45000 44500
+SQL> select * from emp_new;
+no rows selected
+Trigger created.
+SQL> insert into emp77 values(111,65000,45000,56000);
+1 row created.
+SQL> select * from emp77;
+EMP_NO SAL1 SAL2 SAL3
+---------- ---------- ---------- ----------
+1 34000 34000 34500
+11 45000 45000 44500
+111 65000 45000 56000
+SQL> select * from emp_new;
+EMP_NO AVG_SAL
+---------- ----------
+111 55333.33
