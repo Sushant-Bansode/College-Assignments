@@ -1,0 +1,90 @@
+//////////////////////////////  Assignment 2  //////////////////////////////////////////
+
+import java.util.Arrays;
+
+public class Job{
+
+    public static void printJobScheduling(Object[][] arr, int t) {
+        // length of array
+        int n = arr.length;
+
+        // Sort all jobs according to decreasing order of profit
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - 1 - i; j++) {
+                if ((int) arr[j][2] < (int) arr[j + 1][2]) {
+                    // Swap the jobs
+                    Object[] temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+
+        // To keep track of free time slots
+        boolean[] result = new boolean[t];
+        // To store result (Sequence of jobs)
+        Object[] job = new Object[t];
+        Arrays.fill(job, "-1");
+
+        // Iterate through all given jobs
+        for (int i = 0; i < n; i++) {
+            // Find a free slot for this job (Note that we start from the last possible slot)
+            for (int j = Math.min(t - 1, (int) arr[i][1] - 1); j >= 0; j--) {
+                // Free slot found
+                if (!result[j]) {
+                    result[j] = true;
+                    job[j] = arr[i][0];
+                    break;
+                }
+            }
+        }
+
+        // print the sequence
+        System.out.println(Arrays.toString(job));
+    }
+
+    public static void main(String[] args) {
+        // Driver Code
+        Object[][] arr = { 
+            { 'a', 2, 100 }, // Job Array
+            { 'b', 1, 19 }, 
+            { 'c', 2, 27 }, 
+            { 'd', 1, 25 }, 
+            { 'e', 3, 15 } 
+        };
+
+        System.out.println("Following is the maximum profit sequence of jobs");
+        // Function Call
+        printJobScheduling(arr, 3);
+    }
+}
+
+/*In Case for User Defined :
+public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the number of jobs:");
+        int numJobs = scanner.nextInt();
+
+        Object[][] arr = new Object[numJobs][3];
+
+        // Input job details from the user
+        for (int i = 0; i < numJobs; i++) {
+            System.out.println("Enter job details for Job " + (i + 1) + ":");
+            System.out.print("Job ID: ");
+            arr[i][0] = scanner.next().charAt(0);
+            System.out.print("Deadline: ");
+            arr[i][1] = scanner.nextInt();
+            System.out.print("Profit: ");
+            arr[i][2] = scanner.nextInt();
+        }
+
+        System.out.println("Enter the number of available time slots:");
+        int numTimeSlots = scanner.nextInt();
+
+        System.out.println("Following is the maximum profit sequence of jobs");
+        // Function Call
+        printJobScheduling(arr, numTimeSlots);
+
+        scanner.close();
+ }*/

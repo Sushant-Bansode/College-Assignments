@@ -1,0 +1,93 @@
+//////////////////////////////  Assignment 5  //////////////////////////////////////////
+
+import java.util.Scanner;
+
+public class Knight {
+    static final int n = 8;
+
+    // Function to check if a given position (i, j) is valid on the chessboard
+    public static boolean isValid(int i, int j, int sol[][]) {
+        return i >= 1 && i <= n && j >= 1 && j <= n && sol[i][j] == -1;
+    }
+
+    // Recursive function to perform the Knight's Tour
+    public static boolean knightTour(int sol[][], int i, int j, int stepCount, int xMove[], int yMove[]) {
+        // If all squares are visited, return true
+        if (stepCount == n * n) {
+            return true;
+        }
+
+        // Try all next moves from the current coordinate
+        for (int k = 0; k < 8; k++) {
+            int nextI = i + xMove[k];
+            int nextJ = j + yMove[k];
+
+            // Check if the next move is valid
+            if (isValid(nextI, nextJ, sol)) {
+                // Mark the square as visited
+                sol[nextI][nextJ] = stepCount;
+
+                // Recur to explore the next move
+                if (knightTour(sol, nextI, nextJ, stepCount + 1, xMove, yMove)) {
+                    return true; // If a valid solution is found, return true
+                }
+
+                sol[nextI][nextJ] = -1; // Backtrack by marking the square as unvisited
+            }
+        }
+        return false; // No valid solution found
+    }
+
+    // Function to initiate the Knight's Tour
+    public static boolean startKnightTour(int startRow, int startCol) {
+        int[][] sol = new int[n + 1][n + 1];
+
+        // Initialize the chessboard with all squares unvisited
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                sol[i][j] = -1;
+            }
+        }
+
+        sol[startRow][startCol] = 1; // Place the knight at the starting point
+
+        // Possible moves for the knight
+        int xMove[] = {2, 1, -1, -2, -2, -1, 1, 2};
+        int yMove[] = {1, 2, 2, 1, -1, -2, -2, -1};
+
+        // Call the recursive function to find the Knight's Tour
+        if (knightTour(sol, startRow, startCol, 2, xMove, yMove)) {
+            // Print the solution if found
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    System.out.print(sol[i][j] + "\t");
+                }
+                System.out.println("\n");
+            }
+            return true;
+        }
+        return false; // No solution found
+    }
+
+    // Main function to take user input and initiate the Knight's Tour
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Take user input for the starting position
+        System.out.print("Enter the starting row (1 to 8): ");
+        int startRow = scanner.nextInt();
+
+        System.out.print("Enter the starting column (1 to 8): ");
+        int startCol = scanner.nextInt();
+
+        // Check if the starting position is valid
+        if (startRow < 1 || startRow > n || startCol < 1 || startCol > n) {
+            System.out.println("Invalid starting point. The starting point should be within the chessboard.");
+        } else {
+            // Initiate the Knight's Tour
+            startKnightTour(startRow, startCol);
+        }
+
+        scanner.close();
+    }
+}

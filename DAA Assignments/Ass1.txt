@@ -1,0 +1,77 @@
+//////////////////////////////  Assignment 1  ////////////////////////////////////////
+
+
+public class BigMultiply {
+  
+    public static String multiply(String a, String b) {
+        int n = Math.max(a.length(), b.length());
+
+        // Pad 0's to make the lengths of 'a' and 'b' equal
+        while (a.length() < n)
+            a = '0' + a;
+
+        while (b.length() < n)
+            b = '0' + b;
+
+        if (n <= 1) {
+            // Base case: Single-digit multiplication
+            int result = (a.charAt(0) - '0') * (b.charAt(0) - '0');
+            return Integer.toString(result);
+        }
+
+        int mid = n / 2;
+
+        // Divide 'a' and 'b' into two parts
+        String a1 = a.substring(0, mid);
+        String a2 = a.substring(mid);
+        String b1 = b.substring(0, mid);
+        String b2 = b.substring(mid);
+
+        // Recursively compute sub-products
+        String A = multiply(a1, b1);
+        String B = multiply(a2, b1);
+        String C = multiply(a1, b2);
+        String D = multiply(a2, b2);
+
+        // Combine sub-products to get the final result
+        String firstTerm = A + "0".repeat(2 * (n - mid));
+        String secondTerm = add(B, C) + "0".repeat(n - mid);
+        String result = add(add(firstTerm, secondTerm), D);
+
+        return result;
+    }
+
+    public static String add(String a, String b) {
+        int carry = 0;
+        int n = Math.max(a.length(), b.length());
+        StringBuilder result = new StringBuilder();
+
+        while (a.length() < n)
+            a = '0' + a;
+
+        while (b.length() < n)
+            b = '0' + b;
+
+        for (int i = n - 1; i >= 0; i--) {
+            int sum = (a.charAt(i) - '0') + (b.charAt(i) - '0') + carry;
+            carry = sum / 10;
+            result.insert(0, sum % 10);
+        }
+
+        if (carry > 0)
+            result.insert(0, carry);
+
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String a = "";
+
+        System.out.println("Enter the numbers to be squared : ");
+        a = sc.nextLine();
+        String result = multiply(a, a);
+
+        System.out.println("Result square of the number is : " + result);
+    }
+}

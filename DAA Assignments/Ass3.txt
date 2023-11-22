@@ -1,0 +1,78 @@
+
+//////////////////////////////  Assignment 3  //////////////////////////////////////////
+
+
+import java.util.Scanner;
+
+public class FloydWarshall {
+
+    static int infinity = Integer.MAX_VALUE;
+
+    // Method to print the matrix
+    static void print(int a[][], int n) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (a[i][j] == infinity)
+                    System.out.print("∞ ");
+                else
+                    System.out.print(a[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String args[]) {
+        try {
+            Scanner scan = new Scanner(System.in);
+
+            // Input the number of offices (vertices)
+            System.out.print("Enter the number of offices: ");
+            int numberOfOffices = scan.nextInt();
+
+            // Initialize the communication cost matrix with input values
+            int communicationCostMatrix[][] = new int[numberOfOffices][numberOfOffices];
+
+            System.out.println("Enter the communication cost between offices (for no direct connection, enter -1):");
+            for (int i = 0; i < numberOfOffices; i++) {
+                for (int j = 0; j < numberOfOffices; j++) {
+                    System.out.print("Enter cost[" + i + "][" + j + "]: ");
+                    int cost = scan.nextInt();
+                    if (cost == -1)
+                        communicationCostMatrix[i][j] = infinity;
+                    else
+                        communicationCostMatrix[i][j] = cost;
+                }
+            }
+
+            // Display the initial communication cost matrix
+            System.out.println("\nInitial Communication Cost Matrix:\n");
+            print(communicationCostMatrix, numberOfOffices);
+
+            // Floyd-Warshall algorithm to find the minimum communication cost
+            for (int k = 0; k < numberOfOffices; k++) {
+                for (int i = 0; i < numberOfOffices; i++) {
+                    for (int j = 0; j < numberOfOffices; j++) {
+                        // Update the matrix if a shorter path is found
+                        if (communicationCostMatrix[i][k] != infinity && communicationCostMatrix[k][j] != infinity) {
+                            communicationCostMatrix[i][j] = Math.min(
+                                communicationCostMatrix[i][j], 
+                                communicationCostMatrix[i][k] + communicationCostMatrix[k][j]
+                            );
+                        }
+                    }
+                }
+
+                // Display the intermediate communication cost matrix at each iteration
+                System.out.println("\nMatrix A" + k + " (Intermediate Communication Cost Matrix):");
+                print(communicationCostMatrix, numberOfOffices);
+            }
+
+            // Display the final communication cost matrix
+            System.out.println("Final Communication Cost Matrix (" + numberOfOffices + " offices) :\n");
+            print(communicationCostMatrix, numberOfOffices);
+
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+}
